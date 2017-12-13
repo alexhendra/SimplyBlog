@@ -1,6 +1,6 @@
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String
+
+from web_app.models import db, Page
 
 
 def create_app():
@@ -12,14 +12,9 @@ def create_app():
 
     # config diambil dari python file settings.py
     app.config.from_pyfile('settings.py')
-    db = SQLAlchemy(app)
 
-    class Page(db.Model):
-        __tablename__ = 'page'
-        id = Column(Integer, primary_key=True)
-        contents = Column(String)
-
-    db.create_all()
+    # Import from
+    db.init_app(app)
 
     @app.route('/')
     def index():
@@ -47,7 +42,7 @@ def create_app():
         #return 'ID:{}, Title:{}'.format(id, title)
 
         page = Page.query.filter_by(id=1).first()
-        return render_template('index.html', TITLE='Simply Blog', CONTENT=page.contents)
+        return render_template('index.html', TITLE=page.title, CONTENT=page.contents)
 
     return app
 
